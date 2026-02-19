@@ -1,0 +1,40 @@
+# 🚀 Gemini CLI HUD - Advanced Monitoring Extension
+
+[![License](https://img.shields.io/github/license/aviglianof-hub/Hud-Gemini-Cli)](https://github.com/aviglianof-hub/Hud-Gemini-Cli/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+> **⚠️ HELP WANTED:** We are looking for experts to help optimize the real-time synchronization of API Quotas. Check the [Issues](https://github.com/aviglianof-hub/Hud-Gemini-Cli/issues) section!
+
+## 🌟 What is this?
+This is an enhanced version of the official **Google Gemini CLI**, featuring a custom **HUD (Head-Up Display)** built directly into the terminal footer. It provides critical real-time insights that the standard version lacks.
+
+![HUD Preview](./anteprima.jpg)
+
+## ✨ Key Features
+- **🔋 Live Budget Tracking**: Shows remaining API quota percentage.
+- **⏳ Recharge Countdown**: Real-time timer showing exactly when your quota will reset.
+- **🧠 Context RAM Monitor**: Visualizes token usage within the 1M context window.
+- **🚨 Hallucination Warning**: Color-coded alerts when context density exceeds 80% (High risk of hallucination).
+- **📊 Session Request Counter**: Tracks how many API calls you've made in the current session.
+- **🪝 External Widget Hook**: Exposes all data to `global.GEMINI_HUD_DATA` for external debugging tools.
+
+## 🛠 Installation (Local Dev)
+1. Clone this repo.
+2. Run `npm install`.
+3. Start the lab version:
+   ```bash
+   node --inspect=9229 "dist/index.js"
+   ```
+
+## 🚧 Current Limitations & Roadmap
+The main challenge currently is the **Real-time Sync Lag**. 
+The UI updates with a 3-second debounce to avoid API rate-limiting, but we want to implement a **Local Token Estimator** to show instant budget drops before the server confirms them.
+
+---
+
+## 🤝 Contributing
+We love contributions! Whether it's a bug fix, a new feature, or improving the real-time logic.
+- **Specific Goal**: Implement a local "Token Estimator" (Solution B) to simulate budget drops in real-time.
+
+---
+*Built upon the original [Google Gemini CLI](https://github.com/google-gemini/gemini-cli)*

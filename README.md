@@ -1,10 +1,5 @@
 # 🚀 Gemini CLI HUD - Advanced Monitoring Extension
 
-[![License](https://img.shields.io/github/license/aviglianof-hub/Hud-Gemini-Cli)](https://github.com/aviglianof-hub/Hud-Gemini-Cli/blob/main/LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-
-> **⚠️ HELP WANTED:** We are looking for experts to help optimize the real-time synchronization of API Quotas. Check the [Issues](https://github.com/aviglianof-hub/Hud-Gemini-Cli/issues) section!
-
 ## 🌟 What is this?
 This is an enhanced version of the official **Google Gemini CLI**, featuring a custom **HUD (Head-Up Display)** built directly into the terminal footer. It provides critical real-time insights that the standard version lacks.
 

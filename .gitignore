@@ -1,0 +1,11 @@
+# Ignora tutto dentro node_modules
+node_modules/*
+
+# Ma non ignorare la cartella @google (per permetterci di entrare)
+!node_modules/@google/
+
+# Ignora tutto dentro @google
+node_modules/@google/*
+
+# Ma non ignorare gemini-cli (la tua implementazione!)
+!node_modules/@google/gemini-cli/

@@ -32,9 +32,9 @@ The UI updates with a 3-second debounce to avoid API rate-limiting, but we want 
 
 ---
 
-## 🤝 Contributing
-We love contributions! Whether it's a bug fix, a new feature, or improving the real-time logic.
-- **Specific Goal**: Implement a local "Token Estimator" (Solution B) to simulate budget drops in real-time.
-
----
-*Built upon the original [Google Gemini CLI](https://github.com/google-gemini/gemini-cli)*
+ ## 🔬 Research & Development
+ This project is an autonomous personal research laboratory. To maintain the architectural integrity and algorithmic rigor of the research, **external contributions (Pull Requests) or proposals are not accepted.**
+ 
+ All identified technical challenges are resolved internally based on real-world operational needs. The **Issues** section may be used exclusively for reporting critical bugs or technical malfunctions in the current implementation.
+ 
+ *Thank you for respecting the independent nature of this research.*

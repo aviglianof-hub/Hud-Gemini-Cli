@@ -87,12 +87,22 @@ echo.
 echo  Enter the full path to your @google\gemini-cli folder.
 echo  Example: C:\Users\YourName\AppData\Roaming\npm\node_modules\@google\gemini-cli
 echo.
+echo  TIP: If the path contains spaces, you can type it with or without quotes.
+echo.
 set /p "TARGET=  Path: "
+
+:: Strip surrounding quotes if user added them
+set "TARGET=%TARGET:"=%"
+
+:: Trim trailing spaces
+:trimloop
+if "%TARGET:~-1%"==" " set "TARGET=%TARGET:~0,-1%" & goto :trimloop
 
 if not exist "%TARGET%\dist\src\ui\components\Footer.js" (
     echo.
     echo  [ERROR] Footer.js not found in: %TARGET%\dist\src\ui\components\
     echo  Make sure the path points to the @google\gemini-cli folder.
+    echo  Note: the path must end with @google\gemini-cli
     goto :fail
 )
 

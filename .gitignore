@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+package.json
+package-lock.json
+
+# Private research files
+Prompts/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Gemini CLI generated
+GEMINI.md
+crash_log.txt

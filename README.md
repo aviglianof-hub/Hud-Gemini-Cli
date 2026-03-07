@@ -12,7 +12,7 @@ A custom **HUD (Head-Up Display)** for the official [Google Gemini CLI](https://
 
 **What you'll see in the footer bar:**
 ```
-~\Desktop  no sandbox (see /docs)  /model gemini-3-pro-preview RAM:0.0% | Pro:92% (14:30:00) Req:3
+~\Desktop  no sandbox (see /docs)  /model gemini-3-pro-preview CTX:0.0% | Pro:92% (14:30:00) Req:3
 ```
 
 ---
@@ -21,7 +21,7 @@ A custom **HUD (Head-Up Display)** for the official [Google Gemini CLI](https://
 
 | Feature | Description |
 |---------|-------------|
-| **Context Monitor (RAM)** | Algorithmic analysis of token density with risk thresholds at 20% / 50% / 80%. Color-coded: green, yellow, orange, red + hallucination warning. |
+| **Context Window (CTX)** | Real-time context window usage with risk thresholds at 20% / 50% / 80%. Color-coded: green, yellow, orange, red + hallucination warning. |
 | **Budget Tracker (Pro/Flash)** | Real-time quota percentage. Always visible (native CLI hides it above 20%). Detects Pro vs Flash automatically. |
 | **Reset Countdown** | Live `HH:MM:SS` timer showing exactly when your quota resets. |
 | **Request Counter** | Tracks API calls made in the current session. |
@@ -86,7 +86,7 @@ CLI loads Footer.js  --->  loader.mjs intercepts it
                                 |
                                 v
                           hud-footer.mjs   <-- our enhanced Footer
-                          (RAM, Budget, Timer, Req counter)
+                          (CTX, Budget, Timer, Req counter)
 ```
 
 **Key files in `hud-module/`:**
@@ -95,7 +95,7 @@ CLI loads Footer.js  --->  loader.mjs intercepts it
 |------|---------|
 | `register.mjs` | Entry point for `--import`, registers the loader hook |
 | `loader.mjs` | Intercepts `Footer.js` imports from the CLI and serves our version |
-| `hud-footer.mjs` | The HUD Footer component (RAM, Budget, Timer, Request count) |
+| `hud-footer.mjs` | The HUD Footer component (CTX, Budget, Timer, Request count) |
 
 **Why this survives CLI updates:**
 - `npm update -g @google/gemini-cli` only rewrites files inside `node_modules/@google/gemini-cli/`

@@ -123,7 +123,7 @@ echo  ║  - Original CLI files are NEVER touched                   ║
 echo  ║  - CLI updates will NOT break the HUD                     ║
 echo  ║                                                           ║
 echo  ║  You'll see in the footer bar:                            ║
-echo  ║    RAM:X.X%% ^| Pro:XX%% (HH:MM:SS) Req:N                 ║
+echo  ║    CTX:X.X%% ^| Pro:XX%% (HH:MM:SS) Req:N                 ║
 echo  ║                                                           ║
 echo  ║  To uninstall: uninstall.bat                              ║
 echo  ╚═══════════════════════════════════════════════════════════╝

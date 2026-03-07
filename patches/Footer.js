@@ -126,7 +126,7 @@ export const Footer = () => {
     const displayVimMode = vimEnabled ? vimMode : undefined;
     const showDebugProfiler = debugMode || isDevelopment;
 
-    // === 7. RAM (context token density monitor) ===
+    // === 7. CTX — context window usage ===
     const tokenLimitVal = tokenLimit(model) || 1048576;
     const ramPercentage = promptTokenCount > 0 ? (promptTokenCount / tokenLimitVal) * 100 : 0;
     let ramColor = "green";
@@ -204,7 +204,7 @@ export const Footer = () => {
                         _jsx(ContextUsageDisplay, { promptTokenCount: promptTokenCount, model: model, terminalWidth: terminalWidth })
                     ] })),
                     ' ',
-                    _jsxs(Text, { color: ramColor, children: ["RAM:", ramPercentage.toFixed(1), "%", ramWarn] }),
+                    _jsxs(Text, { color: ramColor, children: ["CTX:", ramPercentage.toFixed(1), "%", ramWarn] }),
                     budgetPct !== null
                         ? _jsxs(Text, { color: budgetColor, children: [
                             _jsxs(Text, { children: [" | ", budgetLabel, ":", budgetPct, "%"] }),

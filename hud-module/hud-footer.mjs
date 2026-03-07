@@ -3,7 +3,7 @@
  * by F. Avigliano Research Lab
  *
  * Drop-in replacement for Footer.js loaded via ESM hook.
- * Adds: RAM monitor, always-visible budget %, countdown timer, request counter.
+ * Adds: CTX (context window) monitor, always-visible budget %, countdown timer, request counter.
  *
  * This module uses the SAME imports as the original Footer.js from @google/gemini-cli.
  * It is designed to be version-resilient: all uiState access is wrapped in safe checks.
@@ -130,12 +130,12 @@ export const Footer = () => {
     const displayVimMode = vimEnabled ? vimMode : undefined;
     const showDebugProfiler = debugMode || isDevelopment;
 
-    // === 7. RAM (context token density) ===
+    // === 7. CTX — context window usage ===
     const tokenLimitVal = _tokenLimit(model) || 1048576;
     const ramPercentage = promptTokenCount > 0 ? (promptTokenCount / tokenLimitVal) * 100 : 0;
     let ramColor = "green";
     let ramWarn = "";
-    if (ramPercentage >= 80) { ramColor = theme.status.error; ramWarn = " \u26A0 HALLUCINATION RISK"; }
+    if (ramPercentage >= 80) { ramColor = theme.status.error; ramWarn = " \u26A0 HALL. RISK"; }
     else if (ramPercentage >= 50) { ramColor = "#FFA500"; }
     else if (ramPercentage >= 20) { ramColor = theme.status.warning; }
 
@@ -170,7 +170,7 @@ export const Footer = () => {
     try {
         globalThis.GEMINI_HUD_DATA = {
             budget: budgetPct !== null ? budgetPct + "%" : "N/A",
-            ram: ramPercentage.toFixed(1) + "%",
+            ctx: ramPercentage.toFixed(1) + "%",
             reqs: requestCount,
             timer: countdown || "",
             nativeQuota: nativeQuota || null,
@@ -205,7 +205,7 @@ export const Footer = () => {
                         _jsx(ContextUsageDisplay, { promptTokenCount: promptTokenCount, model: model, terminalWidth: terminalWidth })
                     ] })),
                     ' ',
-                    _jsxs(Text, { color: ramColor, children: ["RAM:", ramPercentage.toFixed(1), "%", ramWarn] }),
+                    _jsxs(Text, { color: ramColor, children: ["CTX:", ramPercentage.toFixed(1), "%", ramWarn] }),
                     budgetPct !== null
                         ? _jsxs(Text, { color: budgetColor, children: [
                             _jsxs(Text, { children: [" | ", budgetLabel, ":", budgetPct, "%"] }),

@@ -1,10 +1,12 @@
-# 🚀 Gemini CLI HUD - Advanced Monitoring Extension
+# Gemini CLI HUD - Advanced Monitoring Extension
 
 [![License](https://img.shields.io/github/license/aviglianof-hub/Hud-Gemini-Cli)](https://github.com/aviglianof-hub/Hud-Gemini-Cli/blob/main/LICENSE.md)
 
-## 🌟 What is this?
+## What is this?
 
-A custom **HUD (Head-Up Display)** patch for the official [Google Gemini CLI](https://github.com/google-gemini/gemini-cli), built directly into the terminal footer. It provides **critical real-time insights** that the standard version lacks.
+A custom **HUD (Head-Up Display)** for the official [Google Gemini CLI](https://github.com/google-gemini/gemini-cli), built directly into the terminal footer. It provides **critical real-time insights** that the standard version lacks.
+
+**v2.0 — Standalone Module**: uses Node.js ESM Loader Hooks to inject the HUD at runtime. **Original CLI files are never modified.** Survives CLI updates without reinstalling.
 
 ![HUD Preview](./anteprima.jpg)
 
@@ -15,25 +17,25 @@ A custom **HUD (Head-Up Display)** patch for the official [Google Gemini CLI](ht
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 | Feature | Description |
 |---------|-------------|
-| 🧠 **Context Monitor (RAM)** | Algorithmic analysis of token density with risk thresholds at 20% / 50% / 80%. Color-coded: green → yellow → orange → red + hallucination warning. |
-| 🔋 **Budget Tracker (Pro/Flash)** | Real-time quota percentage via server polling. Automatically detects Pro vs Flash model category. |
-| ⏳ **Reset Countdown** | Live `HH:MM:SS` timer showing exactly when your quota resets. |
-| 📊 **Request Counter** | Tracks API calls made in the current session. |
-| 🪝 **Debug Hook** | Exposes all data to `globalThis.GEMINI_HUD_DATA` for external tools. |
+| **Context Monitor (RAM)** | Algorithmic analysis of token density with risk thresholds at 20% / 50% / 80%. Color-coded: green, yellow, orange, red + hallucination warning. |
+| **Budget Tracker (Pro/Flash)** | Real-time quota percentage. Always visible (native CLI hides it above 20%). Detects Pro vs Flash automatically. |
+| **Reset Countdown** | Live `HH:MM:SS` timer showing exactly when your quota resets. |
+| **Request Counter** | Tracks API calls made in the current session. |
+| **Debug Hook** | Exposes all data to `globalThis.GEMINI_HUD_DATA` for external tools. |
 
 ---
 
-## 🛠 Installation (Windows)
+## Installation (Windows)
 
 ### Prerequisites
 - [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) installed globally (`npm install -g @google/gemini-cli`)
-- [Node.js](https://nodejs.org/) (v18+)
+- [Node.js](https://nodejs.org/) (v20+)
 
-### Quick Install (1 click)
+### Quick Install
 
 1. **Download** this repository:
    ```
@@ -45,60 +47,78 @@ A custom **HUD (Head-Up Display)** patch for the official [Google Gemini CLI](ht
    install.bat
    ```
 3. The script will:
-   - ✅ Auto-detect your Gemini CLI installation
-   - ✅ Create a backup of the original file (`Footer.js.original`)
-   - ✅ Install the HUD patch
-   - ✅ Verify the installation
+   - Auto-detect your Gemini CLI installation
+   - Install the `gemini-hud` launcher command
+   - Verify the ESM loader hook works
+   - Clean up any old v1.0 patch if present
 
-4. **Restart your Gemini CLI** — done! 🎉
+4. **Launch with HUD:**
+   ```
+   gemini-hud
+   ```
 
 ### Uninstall
 
-To restore the original footer:
+To remove the HUD launcher:
 ```
 uninstall.bat
 ```
 
-### Custom Installation Path
-
-If you have multiple CLI installations, the installer will let you choose:
-- **Option 1:** Auto-detected global installation (recommended)
-- **Option 2:** Enter a custom path manually
+The original `gemini` command is **never modified** and always works normally.
 
 ---
 
-## ⚠️ Important Notes
+## How It Works (v2.0)
 
-### After a Gemini CLI update
-When you update the Gemini CLI (`npm update -g @google/gemini-cli`), the patch will be overwritten. Simply **re-run `install.bat`** to re-apply the HUD.
+Unlike v1.0 which modified CLI files directly, v2.0 uses **Node.js ESM Loader Hooks** — a runtime module interception system.
+
+```
+gemini-hud
+    |
+    v
+node --import register.mjs      <-- registers as ESM interceptor
+    |
+    v
+Gemini CLI starts normally
+    |
+    v
+CLI loads Footer.js  --->  loader.mjs intercepts it
+                                |
+                                v
+                          hud-footer.mjs   <-- our enhanced Footer
+                          (RAM, Budget, Timer, Req counter)
+```
+
+**Key files in `hud-module/`:**
+
+| File | Purpose |
+|------|---------|
+| `register.mjs` | Entry point for `--import`, registers the loader hook |
+| `loader.mjs` | Intercepts `Footer.js` imports from the CLI and serves our version |
+| `hud-footer.mjs` | The HUD Footer component (RAM, Budget, Timer, Request count) |
+
+**Why this survives CLI updates:**
+- `npm update -g @google/gemini-cli` only rewrites files inside `node_modules/@google/gemini-cli/`
+- Our module lives in a separate folder — completely independent
+- The ESM hook intercepts at runtime — the original `Footer.js` is never touched on disk
 
 ### Compatibility
 | Gemini CLI Version | HUD Status |
 |-------------------|------------|
-| v0.30.x | ✅ Tested & Working |
-| Other versions | ⚠️ May work, not guaranteed |
+| v0.32.x | Tested & Working |
+| v0.30.x+ | Should work (same component structure) |
 
 ---
 
-## 🔬 How It Works
+## After a Gemini CLI update
 
-This patch modifies a **single file** in the Gemini CLI:
+**Nothing to do.** The HUD module is independent. Just keep using `gemini-hud`.
 
-```
-@google/gemini-cli/dist/src/ui/components/Footer.js
-```
-
-The modified Footer adds:
-1. **Quota polling** — calls `config.refreshUserQuota()` every 30s (same API as the `/stats` command)
-2. **Raw bucket parsing** — reads `remainingFraction` directly from server response for accurate budget display
-3. **Fuzzy model matching** — handles server model name variations (e.g. `gemini-3-pro-preview` → `gemini-3.1-pro-preview`)
-4. **Countdown timer** — synchronized with `resetTime` from quota buckets
-
-No other files are modified. No external dependencies added.
+If a major CLI refactor changes the Footer.js component structure, update `hud-module/hud-footer.mjs` accordingly.
 
 ---
 
-## 🔬 Research & Development
+## Research & Development
 
 This project is an autonomous personal research laboratory by **F. Avigliano**. To maintain the architectural integrity and algorithmic rigor of the research, **external contributions (Pull Requests) or proposals are not accepted.**
 

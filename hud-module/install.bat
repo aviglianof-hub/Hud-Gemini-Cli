@@ -1,76 +1,65 @@
 @echo off
 chcp 65001 >nul 2>&1
-title Gemini CLI HUD - Installer v2.0
+title Gemini CLI HUD Module — Installer
 echo.
 echo  ╔═══════════════════════════════════════════════════════════╗
-echo  ║      Gemini CLI HUD - Installer v2.0                     ║
-echo  ║      Standalone Module (survives CLI updates)             ║
+echo  ║      Gemini CLI HUD Module — Standalone Installer        ║
+echo  ║      No CLI files modified. Survives updates.            ║
 echo  ║      by F. Avigliano Research Lab                        ║
 echo  ╚═══════════════════════════════════════════════════════════╝
 echo.
 
 :: ============================================================
-:: 1. Verify hud-module files exist
+:: 1. Verify module files exist
 :: ============================================================
 set "SCRIPT_DIR=%~dp0"
-set "HUD_DIR=%SCRIPT_DIR%hud-module\"
 
-if not exist "%HUD_DIR%register.mjs" (
-    echo  [ERROR] hud-module\register.mjs not found!
-    echo  Make sure you run this script from the repository root.
+if not exist "%SCRIPT_DIR%register.mjs" (
+    echo  [ERROR] register.mjs not found! Run from the hud-module folder.
     goto :fail
 )
-if not exist "%HUD_DIR%loader.mjs" (
-    echo  [ERROR] hud-module\loader.mjs not found!
+if not exist "%SCRIPT_DIR%loader.mjs" (
+    echo  [ERROR] loader.mjs not found!
     goto :fail
 )
-if not exist "%HUD_DIR%hud-footer.mjs" (
-    echo  [ERROR] hud-module\hud-footer.mjs not found!
+if not exist "%SCRIPT_DIR%hud-footer.mjs" (
+    echo  [ERROR] hud-footer.mjs not found!
     goto :fail
 )
 echo  [OK] All HUD module files found.
 
 :: ============================================================
-:: 2. Verify Node.js and Gemini CLI
+:: 2. Verify Gemini CLI is installed
 :: ============================================================
 echo.
-echo  Checking prerequisites...
-
-node --version >nul 2>&1
-if errorlevel 1 (
-    echo  [ERROR] Node.js not found! Install Node.js v20+.
-    goto :fail
-)
-for /f "delims=" %%v in ('node --version 2^>nul') do set "NODE_VERSION=%%v"
-echo  [OK] Node.js %NODE_VERSION%
-
+echo  Checking Gemini CLI installation...
 for /f "delims=" %%i in ('npm root -g 2^>nul') do set "NPM_GLOBAL=%%i"
-set "GEMINI_ENTRY=%NPM_GLOBAL%\@google\gemini-cli\dist\index.js"
 
-if not exist "%GEMINI_ENTRY%" (
+if not exist "%NPM_GLOBAL%\@google\gemini-cli\dist\index.js" (
     echo  [ERROR] Gemini CLI not found! Install it first:
     echo          npm install -g @google/gemini-cli
     goto :fail
 )
 
 for /f "delims=" %%v in ('node -e "try{console.log(require('%NPM_GLOBAL:\=/%/@google/gemini-cli/dist/package.json').version)}catch(e){console.log('unknown')}" 2^>nul') do set "CLI_VERSION=%%v"
-echo  [OK] Gemini CLI v%CLI_VERSION%
+echo  [OK] Gemini CLI v%CLI_VERSION% found.
 
 :: ============================================================
 :: 3. Build file:// URL for register.mjs
 :: ============================================================
-set "REGISTER_PATH=%HUD_DIR%register.mjs"
+set "REGISTER_PATH=%SCRIPT_DIR%register.mjs"
 set "REGISTER_URL=%REGISTER_PATH:\=/%"
+set "GEMINI_ENTRY=%NPM_GLOBAL%\@google\gemini-cli\dist\index.js"
 
 :: ============================================================
-:: 4. Install gemini-hud launcher to npm global bin
+:: 4. Copy launcher to npm global bin (next to 'gemini' command)
 :: ============================================================
 echo.
 for /f "delims=" %%i in ('npm prefix -g 2^>nul') do set "NPM_PREFIX=%%i"
 
-echo  Installing launcher to: %NPM_PREFIX%
+echo  Installing HUD launcher to: %NPM_PREFIX%
 
-:: Write .cmd launcher
+:: Write .cmd launcher with hardcoded paths
 (
 echo @echo off
 echo setlocal
@@ -97,17 +86,17 @@ echo exit $LASTEXITCODE
 echo  [OK] gemini-hud.ps1 installed.
 
 :: ============================================================
-:: 5. Restore original Footer.js if previously patched (v1.0 cleanup)
+:: 5. Restore original Footer.js if previously patched
 :: ============================================================
 set "FOOTER_PATH=%NPM_GLOBAL%\@google\gemini-cli\dist\src\ui\components\Footer.js"
 set "BACKUP_PATH=%NPM_GLOBAL%\@google\gemini-cli\dist\src\ui\components\Footer.js.original"
 
 if exist "%BACKUP_PATH%" (
     echo.
-    echo  [CLEANUP] Found old v1.0 patch backup. Restoring original Footer.js...
+    echo  [RESTORE] Found old patch backup. Restoring original Footer.js...
     copy /y "%BACKUP_PATH%" "%FOOTER_PATH%" >nul
     del "%BACKUP_PATH%" >nul 2>&1
-    echo  [OK] Original Footer.js restored. Old patch removed.
+    echo  [OK] Original Footer.js restored. HUD now runs via module hook.
 )
 
 :: ============================================================
@@ -115,12 +104,11 @@ if exist "%BACKUP_PATH%" (
 :: ============================================================
 echo.
 echo  Running quick test...
-node --no-warnings=DEP0040 --import "file:///%REGISTER_URL%" -e "console.log('[HUD] ESM loader hook OK')" 2>nul
+node --no-warnings=DEP0040 --import "file:///%REGISTER_URL%" -e "console.log('[HUD] Loader hook OK')" 2>nul
 if errorlevel 1 (
-    echo  [WARN] Quick test failed. The HUD may not work correctly.
-    echo  Check Node.js version is v20+.
+    echo  [WARN] Quick test failed. Check Node.js version ^(v20+^).
 ) else (
-    echo  [OK] ESM loader hook verified.
+    echo  [OK] ESM loader hook working.
 )
 
 echo.
@@ -130,8 +118,8 @@ echo  ║                                                           ║
 echo  ║  Usage:  gemini-hud                                       ║
 echo  ║                                                           ║
 echo  ║  How it works:                                            ║
-echo  ║  - Runs Gemini CLI with HUD injected at runtime           ║
-echo  ║  - Original CLI files are NEVER modified                  ║
+echo  ║  - Runs standard Gemini CLI with HUD injected at runtime  ║
+echo  ║  - Original CLI files are NEVER touched                   ║
 echo  ║  - CLI updates will NOT break the HUD                     ║
 echo  ║                                                           ║
 echo  ║  You'll see in the footer bar:                            ║
@@ -140,12 +128,6 @@ echo  ║                                                           ║
 echo  ║  To uninstall: uninstall.bat                              ║
 echo  ╚═══════════════════════════════════════════════════════════╝
 echo.
-pause
-exit /b 0
-
-:cancel
-echo.
-echo  Installation cancelled.
 pause
 exit /b 0
 

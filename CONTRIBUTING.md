@@ -1,59 +1,126 @@
-# Contribution Protocol - F. Avigliano Research Lab
+# Research Protocol — F. Avigliano Lab
 
-This project is a personal research laboratory focused on algorithmic rigor. To contribute, follow these guidelines:
+This project is an **independent personal research laboratory**. It is not a community-driven project.
 
-## 1. Open Challenges (Help Wanted)
-The lab periodically identifies technical "bottlenecks" listed in the **Issues** section with the `[HELP WANTED]` label.
-- If you intend to work on one of these challenges, write a comment in the corresponding issue to announce the start of your research. This avoids work overlap.
+---
 
-## 2. External Proposals
-For any other modification not explicitly requested:
-**Do not submit Pull Requests without prior discussion.**
-1. Open a new Issue describing the problem and the proposed algorithmic approach.
-2. Wait for feedback on the proposal's coherence with the lab's philosophy.
+## Bug Reports
 
-## 3. Technical Standards
-- **Commit Messages:** Use the Conventional Commits standard (e.g. `feat:`, `fix:`, `refactor:`).
-- **Documentation:** Any change to the logic must be accompanied by an update to README.md.
+The **Issues** section may be used exclusively for reporting critical bugs or technical malfunctions in the current implementation.
 
-## 4. Project Architecture (v2.0)
-The HUD is now a **standalone ESM module** (`hud-module/`). When modifying the HUD:
+When reporting a bug, include:
+- Gemini CLI version (`gemini --version`)
+- Operating system
+- Steps to reproduce
+- Expected vs actual behavior
+
+---
+
+## External Contributions
+
+To maintain the architectural integrity and algorithmic rigor of this research, **external Pull Requests are not accepted.**
+
+Any modification, feature proposal, or refactor submitted without prior authorization will be closed without review.
+
+---
+
+## Commissioned Work
+
+The lab evaluates external development requests on a selective basis. Proposals are assessed for compatibility with the active research direction before any commitment is made.
+
+To submit a proposal:
+1. Open a new Issue with the label `[commission]`
+2. Describe the objective, scope, and context of the request
+3. The lab will respond if the proposal is deemed compatible
+
+**The lab reserves the right not to respond to requests that fall outside its research scope.** Acceptance is not guaranteed and is entirely at the lab's discretion.
+
+---
+
+## Technical Standards (Internal)
+
+All internal commits follow [Conventional Commits](https://www.conventionalcommits.org/):
+- `fix:` — bug fixes
+- `feat:` — new features
+- `refactor:` — structural changes
+- `docs:` — documentation updates
+
+---
+
+## Project Architecture (v2.0)
+
+The HUD is a **standalone ESM module** (`hud-module/`). When modifying the HUD:
 - Edit `hud-module/hud-footer.mjs` — the enhanced Footer component
 - Never modify CLI source files directly
-- Test with `gemini-hud.cmd` before submitting
-
-## 5. Final Note
-This is a research environment, not a community-driven project. Every contribution will be reviewed with extreme rigor to ensure logical integrity.
+- Test with `gemini-hud.cmd` before committing
 
 ---
 
-# Protocollo di Contribuzione - Laboratorio di Ricerca F. Avigliano
+Copyright © 2026 Francesco Avigliano.
+*Developed with rigor for the evolution of human control over AI.*
 
-Questo progetto è un laboratorio di ricerca personale focalizzato sul rigore algoritmico. Per contribuire, segui queste linee guida:
 
-## 1. Sfide Aperte (Help Wanted)
-Il laboratorio identifica periodicamente dei "colli di bottiglia" tecnici segnalati nella sezione **Issues** con l'etichetta `[HELP WANTED]`.
-- Se intendi lavorare su una di queste sfide, scrivi un commento nella issue corrispondente per annunciare l'inizio della tua ricerca. Questo evita sovrapposizioni di lavoro.
+---
+---
 
-## 2. Proposte Esterne
-Per qualsiasi altra modifica non esplicitamente richiesta:
-**Non inviare Pull Request senza discussione preventiva.**
-1. Apri una nuova Issue descrivendo il problema e l'approccio algoritmico proposto.
-2. Attendi un riscontro sulla coerenza della proposta con la filosofia del laboratorio.
 
-## 3. Standard Tecnico
-- **Messaggi di Commit:** Usa lo standard Conventional Commits (es. `feat:`, `fix:`, `refactor:`).
-- **Documentazione:** Ogni modifica alla logica deve essere accompagnata dall'aggiornamento del README.md.
+# Protocollo di Ricerca — Laboratorio F. Avigliano
 
-## 4. Architettura del Progetto (v2.0)
-L'HUD è ora un **modulo ESM standalone** (`hud-module/`). Quando modifichi l'HUD:
+Questo progetto è un **laboratorio di ricerca personale e indipendente**. Non è un progetto guidato dalla comunità.
+
+---
+
+## Segnalazione Bug
+
+La sezione **Issues** può essere utilizzata esclusivamente per segnalare bug critici o malfunzionamenti tecnici nell'implementazione corrente.
+
+Quando segnali un bug, includi:
+- Versione della Gemini CLI (`gemini --version`)
+- Sistema operativo
+- Passaggi per riprodurre il problema
+- Comportamento atteso vs comportamento effettivo
+
+---
+
+## Contributi Esterni
+
+Per mantenere l'integrità architettonica e il rigore algoritmico di questa ricerca, **le Pull Request esterne non sono accettate.**
+
+Qualsiasi modifica, proposta di funzionalità o refactor inviato senza autorizzazione preventiva verrà chiuso senza revisione.
+
+---
+
+## Lavoro su Commissione
+
+Il laboratorio valuta richieste di sviluppo esterno su base selettiva. Le proposte vengono esaminate in base alla compatibilità con le direzioni di ricerca attive, prima di qualsiasi impegno.
+
+Per inviare una proposta:
+1. Apri una nuova Issue con l'etichetta `[commission]`
+2. Descrivi obiettivo, ambito e contesto della richiesta
+3. Il laboratorio risponderà se la proposta è ritenuta compatibile
+
+**Il laboratorio si riserva il diritto di non rispondere a richieste al di fuori del proprio ambito di ricerca.** L'accettazione non è garantita ed è a totale discrezione del laboratorio.
+
+---
+
+## Standard Tecnico (Interno)
+
+Tutti i commit interni seguono lo standard [Conventional Commits](https://www.conventionalcommits.org/):
+- `fix:` — correzioni di bug
+- `feat:` — nuove funzionalità
+- `refactor:` — modifiche strutturali
+- `docs:` — aggiornamenti alla documentazione
+
+---
+
+## Architettura del Progetto (v2.0)
+
+L'HUD è un **modulo ESM standalone** (`hud-module/`). Quando si modifica l'HUD:
 - Modifica `hud-module/hud-footer.mjs` — il componente Footer potenziato
 - Non modificare mai direttamente i file sorgente della CLI
-- Testa con `gemini-hud.cmd` prima di inviare
-
-## 5. Nota Finale
-Questo è un ambiente di ricerca, non un progetto guidato dalla comunità. Ogni contributo verrà esaminato con estremo rigore per garantirne l'integrità logica.
+- Testa con `gemini-hud.cmd` prima di fare commit
 
 ---
-Copyright (c) 2026 Francesco Avigliano.
+
+Copyright © 2026 Francesco Avigliano.
 *Developed with rigor for the evolution of human control over AI.*

@@ -23,6 +23,14 @@ import { useUIState } from '../contexts/UIStateContext.js';
 import { useConfig } from '../contexts/ConfigContext.js';
 import { useSettings } from '../contexts/SettingsContext.js';
 import { useVimMode } from '../contexts/VimModeContext.js';
+// Safe import of useSessionStats — may not exist in older CLI versions
+let _useSessionStats;
+try {
+    const sc = await import('../contexts/SessionContext.js');
+    _useSessionStats = sc.useSessionStats;
+} catch (_) {
+    _useSessionStats = null;
+}
 
 // Safe tokenLimit — try importing, fall back to constant
 let _tokenLimit;
@@ -44,6 +52,7 @@ export const Footer = () => {
     const config = useConfig();
     const settings = useSettings();
     const { vimEnabled, vimMode } = useVimMode();
+    const sessionData = _useSessionStats ? _useSessionStats() : null;
     const [countdown, setCountdown] = useState("");
     const [polledQuota, setPolledQuota] = useState(null);
     const resetTimeRef = useRef(null);
@@ -66,12 +75,11 @@ export const Footer = () => {
     const nativeQuota = _safe(() => uiState.quota.stats, undefined);
     const currentIsPro = _isProModel(model);
 
-    // === 3. PROACTIVE QUOTA POLLING (fallback when native quota not yet populated) ===
+    // === 3. PROACTIVE QUOTA POLLING (startup burst + periodic refresh) ===
     useEffect(() => {
         mountedRef.current = true;
         const tryPoll = async () => {
             if (!mountedRef.current) return;
-            if (nativeQuota && nativeQuota.remaining !== undefined) return;
             try {
                 if (typeof config.refreshUserQuota === 'function') {
                     const resp = await config.refreshUserQuota();
@@ -86,8 +94,13 @@ export const Footer = () => {
         const t1 = setTimeout(tryPoll, 2000);
         const t2 = setTimeout(tryPoll, 8000);
         const t3 = setTimeout(tryPoll, 20000);
-        return () => { mountedRef.current = false; clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-    }, [config, currentIsPro, nativeQuota]);
+        const interval = setInterval(tryPoll, 60000);
+        return () => {
+            mountedRef.current = false;
+            clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
+            clearInterval(interval);
+        };
+    }, [config, currentIsPro]);
 
     // === 4. COUNTDOWN TIMER ===
     const activeResetTime = _safe(() => nativeQuota.resetTime, null)
@@ -139,9 +152,10 @@ export const Footer = () => {
     else if (ramPercentage >= 50) { ramColor = "#FFA500"; }
     else if (ramPercentage >= 20) { ramColor = theme.status.warning; }
 
-    // === 8. REQUEST COUNT ===
-    const metrics = _safe(() => uiState.sessionStats.metrics, {});
-    const modelsMap = _safe(() => metrics.models, {}) || {};
+    // === 8. REQUEST COUNT (use direct SessionContext for reliable updates) ===
+    const sessionMetrics = _safe(() => sessionData.stats.metrics, null)
+        || _safe(() => uiState.sessionStats.metrics, {});
+    const modelsMap = _safe(() => sessionMetrics.models, {}) || {};
     let mStats = model && modelsMap[model] ? modelsMap[model] : null;
     if (!mStats && model) {
         const ml = model.toLowerCase();
@@ -151,13 +165,19 @@ export const Footer = () => {
     if (!mStats && Object.keys(modelsMap).length > 0) mStats = Object.values(modelsMap)[0];
     const requestCount = _safe(() => mStats.api.totalRequests, 0);
 
-    // === 9. BUDGET ===
+    // === 9. BUDGET (prefer native, use polled as fallback, pick freshest) ===
     let budgetPct = null;
     let budgetColor = "green";
-    if (nativeQuota && nativeQuota.remaining !== undefined && nativeQuota.limit !== undefined && nativeQuota.limit > 0) {
-        budgetPct = ((nativeQuota.remaining / nativeQuota.limit) * 100).toFixed(0);
-    } else if (polledQuota && polledQuota.fraction !== undefined) {
-        budgetPct = (polledQuota.fraction * 100).toFixed(0);
+    const nativePct = (nativeQuota && nativeQuota.remaining !== undefined && nativeQuota.limit !== undefined && nativeQuota.limit > 0)
+        ? ((nativeQuota.remaining / nativeQuota.limit) * 100) : null;
+    const polledPct = (polledQuota && polledQuota.fraction !== undefined)
+        ? (polledQuota.fraction * 100) : null;
+    if (nativePct !== null && polledPct !== null) {
+        budgetPct = Math.min(nativePct, polledPct).toFixed(0);
+    } else if (nativePct !== null) {
+        budgetPct = nativePct.toFixed(0);
+    } else if (polledPct !== null) {
+        budgetPct = polledPct.toFixed(0);
     }
     if (budgetPct !== null) {
         const n = Number(budgetPct);

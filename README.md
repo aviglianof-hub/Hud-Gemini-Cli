@@ -66,13 +66,21 @@ In LLM-based workflows, context saturation is the primary cause of unpredictable
    - Clean up any old v1.0 patch if present
 
 4. **Launch with HUD:**
+
+   **Option A — From any terminal (recommended for developers):**
    ```
    gemini-hud
    ```
 
+   **Option B — Double-click launcher (no terminal needed):**
+
+   A `launch.bat` file is included in the repository root. You can double-click it directly, or copy it anywhere on your system (Desktop, taskbar, etc.). It automatically locates the HUD module and starts the CLI.
+
+   > `launch.bat` does not need to stay in the repo folder — it resolves paths dynamically.
+
 ### Uninstall
 
-To remove the HUD launcher:
+To remove the `gemini-hud` global command:
 ```
 uninstall.bat
 ```

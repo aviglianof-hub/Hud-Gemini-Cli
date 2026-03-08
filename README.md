@@ -1,19 +1,32 @@
-# Gemini CLI HUD - Advanced Monitoring Extension
+# Gemini CLI HUD - Observability Extension
 
 [![License](https://img.shields.io/github/license/aviglianof-hub/Hud-Gemini-Cli)](https://github.com/aviglianof-hub/Hud-Gemini-Cli/blob/main/LICENSE.md)
 
 ## What is this?
 
-A custom **HUD (Head-Up Display)** for the official [Google Gemini CLI](https://github.com/google-gemini/gemini-cli), built directly into the terminal footer. It provides **critical real-time insights** that the standard version lacks.
+In LLM-based workflows, context saturation is the primary cause of unpredictable behavior and hallucinations. The official Google Gemini CLI provides no visibility into this risk during an active session.
 
-**v2.0 — Standalone Module**: uses Node.js ESM Loader Hooks to inject the HUD at runtime. **Original CLI files are never modified.** Survives CLI updates without reinstalling.
+**Hud-Gemini-Cli** is an observability layer for the Google Gemini CLI. It monitors critical session variables — context usage, remaining API quota, and request rate — and displays them directly in the terminal footer, updating on every request.
+
+**v2.0 — Standalone Module**: implemented via Node.js ESM Loader Hooks as a runtime inspection layer. **Original CLI files are never modified.** Survives CLI updates without reinstalling.
 
 ![HUD Preview](./anteprima.jpg)
 
 **What you'll see in the footer bar:**
 ```
-~\Desktop  no sandbox (see /docs)  /model gemini-3-pro-preview CTX:0.0% | Pro:92% (14:30:00) Req:3
+~\Desktop  no sandbox (see /docs)  /model gemini-2.5-pro-preview CTX:0.0% | Pro:92% (14:30:00) Req:3
 ```
+
+---
+
+## Why use it?
+
+| Area | Benefit |
+| :--- | :--- |
+| **Application Reliability** | CTX monitoring with fixed risk thresholds at 20% / 50% / 80% signals progressive context saturation before it compromises response coherence. |
+| **Cost Management** | Remaining API quota (Pro/Flash) is always visible — the native CLI hides it above 20%. Precise consumption control without opening the dashboard. |
+| **Operational Continuity** | The integrated reset timer provides visibility on the exact time to quota restoration, eliminating unexpected session interruptions. |
+| **Zero Overhead** | Passive observer: reads data already produced by the CLI. **AI tokens generated: 0. Additional LLM calls: 0.** Additional network traffic: at most 3 lightweight quota-check calls at session startup (at 2s, 8s, 20s), only if native quota data is not yet available — none thereafter. The countdown timer is pure local computation (`setInterval` 1s). |
 
 ---
 
@@ -21,8 +34,8 @@ A custom **HUD (Head-Up Display)** for the official [Google Gemini CLI](https://
 
 | Feature | Description |
 |---------|-------------|
-| **Context Window (CTX)** | Real-time context window usage with risk thresholds at 20% / 50% / 80%. Color-coded: green, yellow, orange, red + hallucination warning. |
-| **Budget Tracker (Pro/Flash)** | Real-time quota percentage. Always visible (native CLI hides it above 20%). Detects Pro vs Flash automatically. |
+| **Context Window (CTX)** | Per-request context window usage with fixed risk thresholds at 20% / 50% / 80%. Color-coded: green → yellow → orange → red + hallucination warning. |
+| **Budget Tracker (Pro/Flash)** | Always-visible quota percentage. Native CLI hides it above 20%. Auto-detects Pro vs Flash model. |
 | **Reset Countdown** | Live `HH:MM:SS` timer showing exactly when your quota resets. |
 | **Request Counter** | Tracks API calls made in the current session. |
 | **Debug Hook** | Exposes all data to `globalThis.GEMINI_HUD_DATA` for external tools. |
@@ -120,13 +133,18 @@ If a major CLI refactor changes the Footer.js component structure, update `hud-m
 
 ## Research & Development
 
-This project is an autonomous personal research laboratory by **F. Avigliano**. To maintain the architectural integrity and algorithmic rigor of the research, **external contributions (Pull Requests) or proposals are not accepted.**
+Autonomous independent research by **F. Avigliano**. This project does not accept Pull Requests or external contributions.
 
-The **Issues** section may be used exclusively for reporting critical bugs or technical malfunctions in the current implementation.
+For the research protocol and collaboration policies: [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-*Thank you for respecting the independent nature of this research.*
+---
 
-If you find this work useful, you can support the lab: [PayPal](https://paypal.me/aviglianofhub)
+## Support the Lab
+
+If you find this work useful, you can support the research:
+
+- **One-time** — [PayPal](https://paypal.me/aviglianofhub)
+- **Monthly** — GitHub Sponsors *(coming soon)*
 
 ---
 
